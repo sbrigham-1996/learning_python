@@ -63,8 +63,8 @@ learning_python/
 
 | Chapter | Topic | Status |
 |---------|-------|--------|
-| Ch. 1 | Python Basics | 🔜 Next |
-| Ch. 2 | Flow Control | ⬜ Not started |
+| Ch. 1 | Python Basics | ✅ Complete |
+| Ch. 2 | Flow Control | 🔜 Next |
 | Ch. 3 | Functions | ⬜ Not started |
 | Ch. 4 | Lists | ⬜ Not started |
 | Ch. 5 | Dictionaries & Structuring Data | ⬜ Not started |
