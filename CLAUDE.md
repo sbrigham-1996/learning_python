@@ -64,8 +64,8 @@ learning_python/
 | Chapter | Topic | Status |
 |---------|-------|--------|
 | Ch. 1 | Python Basics | ✅ Complete |
-| Ch. 2 | Flow Control | 🔜 Next |
-| Ch. 3 | Functions | ⬜ Not started |
+| Ch. 2 | Flow Control | ✅ Complete |
+| Ch. 3 | Functions | 🔜 Next |
 | Ch. 4 | Lists | ⬜ Not started |
 | Ch. 5 | Dictionaries & Structuring Data | ⬜ Not started |
 | Ch. 6 | Manipulating Strings | ⬜ Not started |
