@@ -88,6 +88,35 @@ learning_python/
 
 ## Notes & Lessons Learned
 
+### Ch. 1 — Python Basics
+
+- **`/` always returns a float, even when it divides evenly.** `10 / 2` gives `5.0`, not `5`. Use `//` (integer division) when you need a whole number result.
+- **`"42"` and `42` are completely different things.** Quotes make any value a string. You cannot use `+` to mix a string and an int — Python raises a `TypeError` rather than guessing your intent.
+- **Scripts don't auto-display expressions — you must `print()`.** In the interactive REPL, typing `2 + 2` shows `4`. In a `.py` file, that expression runs silently. Always wrap output in `print()`.
+- **`=` is assignment, not equality.** It puts a value into a variable. Comparing two values requires `==`. Mixing them up inside conditions is one of the most common early bugs.
+- **Python silently overwrites variables.** Assigning a new value to an existing variable name replaces the old one with no warning. If you meant to make a new variable, choose a new name.
+- **`input()` always returns a string.** Even if the user types `25`, you get the string `"25"`. Wrap it in `int()` (or `float()`) immediately if you need to do math with it.
+- **Concatenating a number into a string requires `str()`.** You can't do `"You are " + age + " years old"` if `age` is an int — convert it first: `str(age)`.
+- **String replication (`*`) requires an int, not a float.** `"Ha" * 3` works; `"Ha" * 3.0` raises a `TypeError`.
+- **Spaces in string concatenation are your responsibility.** `"Hello" + "World"` gives `"HelloWorld"`. The space has to be an explicit `" "` in the join.
+- **Use `snake_case` for variable names, not `camelCase`.** `user_name` is Pythonic; `userName` is not. PEP 8 is the style guide Python code follows.
+
+### Ch. 2 — Flow Control
+
+- **`True` and `False` are capitalized — always.** Python is case-sensitive. `true` or `TRUE` cause a `NameError` because Python reads them as undefined variable names, not Boolean values.
+- **`==` compares; `=` assigns.** Writing `if x = 10:` is a syntax error in Python. The comparison operator inside conditions is always `==`.
+- **String comparison is case-sensitive.** `'Alice' == 'alice'` is `False`. If you need a case-insensitive check, normalize with `.lower()` first.
+- **`42 == 42.0` is `True`, but `42 == '42'` raises a `TypeError`.** Ints and floats compare fine; ints and strings do not.
+- **Boolean operator precedence: `not` → `and` → `or`.** Complex conditions without parentheses evaluate in that order, which can produce surprising results. Use parentheses liberally to make intent explicit.
+- **`elif` stops at the first `True` — even if later conditions are also `True`.** If you need multiple conditions to potentially all run, use separate `if` statements instead of a chain.
+- **A `while` loop without a change to its condition runs forever.** Something inside the loop body must eventually make the condition `False`, or you have an infinite loop.
+- **Prefer `+=` over `x = x + 1`.** The augmented assignment operators (`+=`, `-=`, `*=`, `/=`) are more concise and Pythonic for incrementing or decrementing a variable.
+- **`range()` stops *before* the stop value.** `range(5)` yields `0, 1, 2, 3, 4` — five numbers, last one is `4`. To get `1` through `5` inclusive, use `range(1, 6)`.
+- **Use `_` as the loop variable when you don't need the value.** `for _ in range(3):` signals to readers that the loop variable itself is intentionally unused.
+- **`for` vs `while`: know when each is appropriate.** Use `for` when iterating over a known sequence. Use `while` when you don't know in advance how many iterations you need.
+- **`break`, `continue`, and `sys.exit()` each exit at a different scope.** `continue` skips the rest of the current iteration. `break` exits the current loop entirely. `sys.exit()` stops the whole program — code after the loop still runs after `break`, but nothing runs after `sys.exit()`.
+- **`sys.exit()` requires `import sys` first.** It is not a built-in like `print()`. Forgetting the import causes a `NameError`.
+
 ### Ch. 3 — Functions
 
 - **Assignment inside a function always creates a local variable.** Even if a global with the same name exists, writing `x = ...` inside a function makes a new local `x`. Use the `global` statement only when you genuinely need to modify a global.
