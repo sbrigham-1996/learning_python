@@ -65,8 +65,8 @@ learning_python/
 |---------|-------|--------|
 | Ch. 1 | Python Basics | ✅ Complete |
 | Ch. 2 | Flow Control | ✅ Complete |
-| Ch. 3 | Functions | 🔜 Next |
-| Ch. 4 | Lists | ⬜ Not started |
+| Ch. 3 | Functions | ✅ Complete |
+| Ch. 4 | Lists | 🔜 Next |
 | Ch. 5 | Dictionaries & Structuring Data | ⬜ Not started |
 | Ch. 6 | Manipulating Strings | ⬜ Not started |
 | Ch. 7 | Pattern Matching with Regex | ⬜ Not started |
@@ -88,4 +88,11 @@ learning_python/
 
 ## Notes & Lessons Learned
 
-*(update this section as notable concepts or gotchas come up)*
+### Ch. 3 — Functions
+
+- **Assignment inside a function always creates a local variable.** Even if a global with the same name exists, writing `x = ...` inside a function makes a new local `x`. Use the `global` statement only when you genuinely need to modify a global.
+- **Every function returns something.** If there's no `return` statement, Python returns `None`. Storing the result of a print-only function is a common bug — you get `None`, not the printed value.
+- **`return` exits the function immediately.** Nothing after it in the same branch runs. Use this for early exits and input guards.
+- **Prefer arguments + return values over `global`.** Functions that take inputs and return outputs are easier to test, debug, and reuse. Reach for `global` only as a last resort.
+- **Catch specific exceptions, not everything.** A bare `except:` hides bugs. Name the exception type (`ValueError`, `ZeroDivisionError`, etc.) so unexpected errors still surface.
+- **The retry loop pattern:** `while True` + `try/except` inside + `return` on success is the standard way to keep prompting until valid input is received.
