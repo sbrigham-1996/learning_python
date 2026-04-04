@@ -66,8 +66,8 @@ learning_python/
 | Ch. 1 | Python Basics | ✅ Complete |
 | Ch. 2 | Flow Control | ✅ Complete |
 | Ch. 3 | Functions | ✅ Complete |
-| Ch. 4 | Lists | 🔜 Next |
-| Ch. 5 | Dictionaries & Structuring Data | ⬜ Not started |
+| Ch. 4 | Lists | ✅ Complete |
+| Ch. 5 | Dictionaries & Structuring Data | 🔜 Next |
 | Ch. 6 | Manipulating Strings | ⬜ Not started |
 | Ch. 7 | Pattern Matching with Regex | ⬜ Not started |
 | Ch. 8 | Input Validation | ⬜ Not started |
@@ -125,3 +125,16 @@ learning_python/
 - **Prefer arguments + return values over `global`.** Functions that take inputs and return outputs are easier to test, debug, and reuse. Reach for `global` only as a last resort.
 - **Catch specific exceptions, not everything.** A bare `except:` hides bugs. Name the exception type (`ValueError`, `ZeroDivisionError`, etc.) so unexpected errors still surface.
 - **The retry loop pattern:** `while True` + `try/except` inside + `return` on success is the standard way to keep prompting until valid input is received.
+
+### Ch. 4 — Lists
+
+- **Indexes start at 0, not 1.** A list with `n` items has valid indexes `0` through `n-1`. The last valid index is always `len(list) - 1`.
+- **Negative indexes count from the end.** `-1` is the last item, `-2` is second-to-last. Cleaner than calculating `len(list) - 1` manually.
+- **Slices: start is inclusive, end is exclusive.** `list[1:4]` gives you items at indexes 1, 2, and 3 — same logic as `range()`.
+- **A slice always returns a list, even with one item.** `list[1:2]` is a list; `list[1]` is the item itself. Different types.
+- **`sort()` and `reverse()` modify in place and return `None`.** Never do `x = my_list.sort()` — `x` will be `None`. Use `sorted()` if you need a new list without touching the original.
+- **`remove()` removes by value; `del` removes by index.** `remove()` raises `ValueError` if the value isn't found. `remove()` only removes the first match if duplicates exist.
+- **Unpacking requires an exact variable count match.** `a, b = [1, 2, 3]` raises `ValueError: too many values to unpack`.
+- **`join()` is called on the delimiter, not the list.** `' '.join(words)` — the string owns the method. This surprises everyone at first.
+- **Assignment does NOT copy a list — it copies the reference.** `b = a` means both `a` and `b` point to the same list. Changing one changes both.
+- **Use `[:]` or `copy.copy()` for a shallow copy; `copy.deepcopy()` for nested lists.** Shallow copies still share inner list references — only `deepcopy()` is fully independent.
