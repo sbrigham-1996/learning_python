@@ -67,8 +67,8 @@ learning_python/
 | Ch. 2 | Flow Control | ✅ Complete |
 | Ch. 3 | Functions | ✅ Complete |
 | Ch. 4 | Lists | ✅ Complete |
-| Ch. 5 | Dictionaries & Structuring Data | 🔜 Next |
-| Ch. 6 | Manipulating Strings | ⬜ Not started |
+| Ch. 5 | Dictionaries & Structuring Data | ✅ Complete |
+| Ch. 6 | Manipulating Strings | 🔜 Next |
 | Ch. 7 | Pattern Matching with Regex | ⬜ Not started |
 | Ch. 8 | Input Validation | ⬜ Not started |
 | Ch. 9 | Reading & Writing Files | ⬜ Not started |
@@ -138,3 +138,16 @@ learning_python/
 - **`join()` is called on the delimiter, not the list.** `' '.join(words)` — the string owns the method. This surprises everyone at first.
 - **Assignment does NOT copy a list — it copies the reference.** `b = a` means both `a` and `b` point to the same list. Changing one changes both.
 - **Use `[:]` or `copy.copy()` for a shallow copy; `copy.deepcopy()` for nested lists.** Shallow copies still share inner list references — only `deepcopy()` is fully independent.
+
+### Ch. 5 — Dictionaries & Structuring Data
+
+- **Dictionaries store data by label, not position.** `person['age']` is self-documenting; `person[1]` is not. When you'd want to label your list items, that's a signal to use a dict instead.
+- **Accessing a missing key raises `KeyError`.** Unlike a list's `IndexError`, there's no "out of bounds" — the key either exists or it doesn't. Use `get()` for safe lookups.
+- **`get(key, default)` never raises `KeyError`.** It returns the default (or `None`) if the key is missing. It never modifies the dict. Use it any time a missing key is a valid, expected state.
+- **`setdefault(key, default)` inserts on a miss; `get()` does not.** Use `setdefault()` when you need to guarantee a key exists before working with it — especially for initializing lists or counters inside a dict.
+- **Looping: `.keys()`, `.values()`, `.items()` make intent explicit.** `for k in my_dict:` loops over keys by default, but spelling it out is clearer. `.items()` with tuple unpacking (`for k, v in d.items()`) is the standard Pythonic pattern for key-value iteration.
+- **`in` checks keys by default.** `'name' in person` checks keys. To check values, you must use `'Spencer' in person.values()` explicitly.
+- **The views returned by `.keys()`, `.values()`, `.items()` are not lists.** They are live views of the dict. Wrap in `list()` to index into them or store a snapshot.
+- **Use `pprint.pprint()` for nested data.** Plain `print()` dumps everything on one line. `pprint` indents and sorts keys, making nested structures readable at a glance. Use `pformat()` when you need the formatted string rather than printed output.
+- **Nest dicts and lists together to model real data.** Dict of dicts for labeled records; lists inside dicts for ordered collections within a record. Chain `[]` brackets to drill down: `data['B-1']['soil_layers'][0]`.
+- **Use `is None`, not `== None`.** When checking for the absence of a value, `is None` is the correct Pythonic form. PEP 8 requires it and it signals intent more clearly than `==`.
