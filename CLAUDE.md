@@ -68,8 +68,8 @@ learning_python/
 | Ch. 3 | Functions | ✅ Complete |
 | Ch. 4 | Lists | ✅ Complete |
 | Ch. 5 | Dictionaries & Structuring Data | ✅ Complete |
-| Ch. 6 | Manipulating Strings | 🔜 Next |
-| Ch. 7 | Pattern Matching with Regex | ⬜ Not started |
+| Ch. 6 | Manipulating Strings | ✅ Complete |
+| Ch. 7 | Pattern Matching with Regex | 🔜 Next |
 | Ch. 8 | Input Validation | ⬜ Not started |
 | Ch. 9 | Reading & Writing Files | ⬜ Not started |
 | Ch. 10 | Organizing Files | ⬜ Not started |
@@ -151,3 +151,21 @@ learning_python/
 - **Use `pprint.pprint()` for nested data.** Plain `print()` dumps everything on one line. `pprint` indents and sorts keys, making nested structures readable at a glance. Use `pformat()` when you need the formatted string rather than printed output.
 - **Nest dicts and lists together to model real data.** Dict of dicts for labeled records; lists inside dicts for ordered collections within a record. Chain `[]` brackets to drill down: `data['B-1']['soil_layers'][0]`.
 - **Use `is None`, not `== None`.** When checking for the absence of a value, `is None` is the correct Pythonic form. PEP 8 requires it and it signals intent more clearly than `==`.
+
+### Ch. 6 — Manipulating Strings
+
+- **Strings are immutable — you can read by index, but not write.** `name[0] = 's'` raises a `TypeError`. To get a modified version, build a new string: `name[0].lower() + name[1:]`.
+- **Use opposite quote types to avoid escaping.** `"It's fine"` and `'She said "hello"'` are cleaner than escaping. Reserve `\'` and `\"` for when you have no other choice.
+- **`repr()` reveals invisible characters.** When a string looks right but isn't behaving right, wrap it in `repr()` — it shows `\n`, `\t`, and spaces explicitly. Essential for debugging whitespace bugs.
+- **Raw strings (`r"..."`) disable all escape processing.** Use them for Windows file paths and regex patterns (Ch. 7) where backslashes should be treated literally, not as escape sequences.
+- **`upper()` and `lower()` return new strings — they don't modify in place.** Same immutability rule as slicing. The original string is always unchanged.
+- **Normalize with `.lower()` before comparing strings you didn't write.** User input, file data, and API responses can have any casing. Normalizing first prevents silent equality failures.
+- **`isdecimal()` before `int()` is the clean guard against crashes.** It's the Pythonic alternative to wrapping every conversion in `try/except` when you expect a whole number.
+- **`split()` with no argument is smarter than `split(" ")`.** It handles all whitespace, collapses multiples, and strips leading/trailing — always prefer it for natural text input.
+- **`join()` is called on the delimiter, not the list.** `" ".join(words)` — the separator string owns the method. Every item in the list must already be a string.
+- **`" ".join(text.split())` is the one-liner for normalizing whitespace.** Split on any whitespace (cleans edges and multiples), then rejoin with single spaces. Use it constantly.
+- **`strip()` on input and file lines is non-negotiable.** Every line read from a file has a trailing `\n`. Every user input may have accidental spaces. Strip before using.
+- **`rjust()`/`ljust()` width is the total output length, not the padding amount.** If your longest item is 10 chars and you call `ljust(12)`, all rows get 2 spaces of padding — regardless of their individual length.
+- **`startswith()`/`endswith()` accept a tuple for multiple options.** `filename.endswith((".jpg", ".png"))` is cleaner than chaining `or`. Must be a tuple, not a list.
+- **`sys.argv` is a list of command-line arguments.** `sys.argv[0]` is always the script name. Check `len(sys.argv)` before accessing `sys.argv[1]` to avoid an `IndexError`.
+- **`pyperclip.copy()` turns a script into a tool.** Any script that produces a final string result should consider copying it to the clipboard automatically — skips the manual copy step entirely.
