@@ -69,7 +69,7 @@ learning_python/
 | Ch. 4 | Lists | ✅ Complete |
 | Ch. 5 | Dictionaries & Structuring Data | ✅ Complete |
 | Ch. 6 | Manipulating Strings | ✅ Complete |
-| Ch. 7 | Pattern Matching with Regex | 🔜 Next |
+| Ch. 7 | Pattern Matching with Regex | ✅ Complete |
 | Ch. 8 | Input Validation | ⬜ Not started |
 | Ch. 9 | Reading & Writing Files | ⬜ Not started |
 | Ch. 10 | Organizing Files | ⬜ Not started |
@@ -151,6 +151,23 @@ learning_python/
 - **Use `pprint.pprint()` for nested data.** Plain `print()` dumps everything on one line. `pprint` indents and sorts keys, making nested structures readable at a glance. Use `pformat()` when you need the formatted string rather than printed output.
 - **Nest dicts and lists together to model real data.** Dict of dicts for labeled records; lists inside dicts for ordered collections within a record. Chain `[]` brackets to drill down: `data['B-1']['soil_layers'][0]`.
 - **Use `is None`, not `== None`.** When checking for the absence of a value, `is None` is the correct Pythonic form. PEP 8 requires it and it signals intent more clearly than `==`.
+
+### Ch. 7 — Pattern Matching with Regular Expressions
+
+- **Regex is a two-step process: compile once, search many times.** `re.compile()` builds the Regex object. `.search()`, `.findall()`, and `.sub()` use it. Compiling once and reusing is more efficient than recompiling inside a loop.
+- **Always use raw strings `r"..."` for regex patterns.** Backslashes have special meaning in both Python strings and regex. Raw strings pass them straight to the regex engine and prevent silent bugs.
+- **`search()` returns a Match object or `None` — always check before calling `.group()`.** A bare `match.group()` on `None` raises `AttributeError`. The standard guard is `if match:`.
+- **`group(0)` is the full match; `group(1)`, `group(2)`, etc. are captured groups.** Groups are numbered left to right by opening parenthesis. An optional group that didn't participate returns `None`, not an empty string.
+- **`findall()` return type depends on how many groups your pattern has.** No groups → list of strings. One group → list of strings (group content only). Multiple groups → list of tuples. This is a frequent source of bugs.
+- **`?`, `*`, `+` apply to the thing immediately to their left — a character or a group.** `?` = 0 or 1. `*` = 0 or more. `+` = 1 or more. `{n,m}` gives you precise control.
+- **Repetition operators are greedy by default — they grab as much as possible.** Add `?` after them (`*?`, `+?`, `{n,m}?`) to make them non-greedy. Non-greedy stops at the first valid match; greedy runs to the last.
+- **`^` has two completely different meanings depending on context.** Inside `[]`: negation (`[^aeiou]` = not a vowel). Outside `[]` at pattern start: anchor (`^\d` = starts with a digit). Same character, different job.
+- **`^pattern$` together is the standard input validation idiom.** Without both anchors, stray characters before or after the pattern can sneak through undetected.
+- **`.` matches any character except newline.** Use `re.DOTALL` to make it match newlines too. Prefer `[]` over `.` when you know what characters are valid — `.` is convenient but imprecise.
+- **`re.IGNORECASE` affects matching only — returned text preserves original casing.** Combine multiple flags with `|`: `re.IGNORECASE | re.VERBOSE`.
+- **`sub()` returns a new string; `subn()` returns `(new_string, count)`.** Use `subn()` when you need to know whether any replacements were made.
+- **Backreferences in `sub()` replacement strings (`\1`, `\2`) must use a raw string.** Without `r"..."`, `\1` is misread as a Python escape sequence.
+- **`re.VERBOSE` makes complex patterns maintainable.** Whitespace and `#` comments are ignored by the engine. Literal spaces must be escaped as `\ ` or written as `[ ]`.
 
 ### Ch. 6 — Manipulating Strings
 
