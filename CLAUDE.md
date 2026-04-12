@@ -81,7 +81,7 @@ learning_python/
 | Ch. 5 | Dictionaries & Structuring Data | ✅ Complete |
 | Ch. 6 | Manipulating Strings | ✅ Complete |
 | Ch. 7 | Pattern Matching with Regex | ✅ Complete |
-| Ch. 8 | Input Validation | ⬜ Not started |
+| Ch. 8 | Input Validation | ✅ Complete |
 | Ch. 9 | Reading & Writing Files | ⬜ Not started |
 | Ch. 10 | Organizing Files | ⬜ Not started |
 | Ch. 11 | Debugging | ⬜ Not started |
@@ -198,3 +198,18 @@ learning_python/
 - **`sub()` returns a new string; `subn()` returns `(new_string, count)`.** Use `subn()` when you need to know whether any replacements were made.
 - **Backreferences in `sub()` replacement strings (`\1`, `\2`) must use a raw string.** Without `r"..."`, `\1` is misread as a Python escape sequence.
 - **`re.VERBOSE` makes complex patterns maintainable.** Whitespace and `#` comments are ignored by the engine. Literal spaces must be escaped as `\ ` or written as `[ ]`.
+
+### Ch. 8 — Input Validation
+
+- **PyInputPlus replaces the `while True` + `try/except` retry loop.** Every numeric, yes/no, choice, and format input function handles the retry loop internally. You get one-line validated input instead of ~8 lines of boilerplate.
+- **`inputInt()` rejects floats — `25.5` is not a valid integer.** Use `inputFloat()` when decimals are acceptable, or `inputNum()` when you don't care which type the user provides.
+- **`inputNum()` return type adapts to what was typed.** `"25"` → `int`, `"25.5"` → `float`. Useful when either type is acceptable downstream.
+- **`min`/`max` are inclusive; `greaterThan`/`lessThan` are exclusive.** `min=1` allows `1`; `greaterThan=1` rejects it. Same distinction as `>=` vs `>`.
+- **`limit` and `timeout` raise exceptions — always handle them.** `RetryLimitException` when attempts are exhausted, `TimeoutException` when time runs out. Use `default=` as a cleaner alternative when a fallback value makes sense.
+- **`inputBool()` does NOT accept yes/no/y/n — only `True`/`False`.** For conversational yes/no prompts, use `inputYesNo()` instead. They accept different inputs and return different types.
+- **`inputMenu()` auto-generates a numbered list; the user can respond by number or text.** Use it over `inputChoice()` when you want PyInputPlus to handle the display formatting.
+- **Don't rely on `inputDatetime()` default formats — always pass an explicit `formats` list.** The defaults require a time component; date-only strings like `04/12/2026` are rejected. Explicit formats prevent silent surprises.
+- **`inputDatetime()` returns a real `datetime` object.** Date math, `.strftime()` formatting, and attribute access (`.year`, `.month`, `.day`) are all immediately available — no manual parsing needed.
+- **`mustExist=True` in `inputFilepath()` may not be reliable.** Verify filesystem existence with `os.path.exists()` as an explicit follow-up check rather than depending on PyInputPlus alone.
+- **`inputCustom()` contract: raise `ValueError` on bad input, return `None` on good input.** PyInputPlus catches the `ValueError`, displays the message, and reprompts. Your function owns the rule; PyInputPlus owns the loop.
+- **`inputCustom()` is where Ch. 7 regex pays off.** Any compiled regex pattern can become a validator. Compile with `re.compile()` at module level (once), then use `.search()` inside the validator function.
