@@ -39,6 +39,17 @@ live there as they are completed.
 
 ---
 
+## Dependencies
+
+Third-party libraries installed in this project, tracked in `requirements.txt` at the repo root:
+
+| Library | Introduced | Purpose |
+|---------|------------|---------|
+| `pyperclip` | Ch. 6 | Clipboard access — used in the password locker capstone |
+| `PyInputPlus` | Ch. 8 | Input validation with built-in retry, timeout, and type checking |
+
+---
+
 ## Folder Structure
 ```
 learning_python/
