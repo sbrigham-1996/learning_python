@@ -82,8 +82,8 @@ learning_python/
 | Ch. 6 | Manipulating Strings | ✅ Complete |
 | Ch. 7 | Pattern Matching with Regex | ✅ Complete |
 | Ch. 8 | Input Validation | ✅ Complete |
-| Ch. 9 | Reading & Writing Files | ⬜ Not started |
-| Ch. 10 | Organizing Files | ⬜ Not started |
+| Ch. 9 | Reading & Writing Files | ✅ Complete |
+| Ch. 10 | Organizing Files | 🔜 Next |
 | Ch. 11 | Debugging | ⬜ Not started |
 | Ch. 12 | Web Scraping | ⬜ Not started |
 | Ch. 13 | Working with Excel Spreadsheets | ⬜ Not started |
@@ -213,3 +213,27 @@ learning_python/
 - **`mustExist=True` in `inputFilepath()` may not be reliable.** Verify filesystem existence with `os.path.exists()` as an explicit follow-up check rather than depending on PyInputPlus alone.
 - **`inputCustom()` contract: raise `ValueError` on bad input, return `None` on good input.** PyInputPlus catches the `ValueError`, displays the message, and reprompts. Your function owns the rule; PyInputPlus owns the loop.
 - **`inputCustom()` is where Ch. 7 regex pays off.** Any compiled regex pattern can become a validator. Compile with `re.compile()` at module level (once), then use `.search()` inside the validator function.
+
+### Ch. 9 — Reading & Writing Files
+
+- **A `Path` object does not require the path to exist on disk.** `Path('/some/fake/path')` is valid — it's a representation, not a connection. Existence checks (`.exists()`, `.is_file()`, `.is_dir()`) are separate, explicit calls.
+- **Use `/` to join `Path` objects — never string concatenation.** `Path('/Users/spencer') / 'Desktop' / 'file.txt'` is cross-platform safe. String concatenation with `+` or `os.sep` is fragile and unnecessary.
+- **`Path.cwd()` depends on where you run the script from; `Path.home()` does not.** `cwd()` shifts if you `cd` before running. `home()` always points to your user directory. Use `Path(__file__).parent` when you need a path relative to the script itself — it's stable regardless of the working directory.
+- **`.name` is the full filename; `.stem` is the name without extension; `.suffix` includes the dot.** `Path('README.md').stem` → `'README'`, `.suffix` → `'.md'`. Use these to rebuild a path with a changed extension instead of slicing strings manually.
+- **Always use `with open(...)` — never `f = open(...)` without a `with` block.** The `with` statement guarantees the file closes even if an exception is raised mid-read. A manually opened file left unclosed can corrupt data and hold OS locks.
+- **`.readlines()` keeps the trailing `\n` on every line — always `.strip()` before using.** `['Line one\n', 'Line two\n']` is what you get. The Ch. 6 rule about stripping file lines is non-negotiable here.
+- **Iterating directly over the file object is the most memory-efficient read pattern.** `for line in f:` yields one line at a time without loading the whole file. Use `.read()` or `.readlines()` only when you need the entire content at once.
+- **`'w'` mode silently overwrites — there is no warning, no confirmation, no recovery.** Any existing content is gone the moment you call `open(path, 'w')`. Use `'a'` to append to an existing file. Default (no mode) is `'r'` (read-only).
+- **`.write()` does NOT add `\n` automatically — you must include it in the string.** `f.write('hello')` followed by `f.write('world')` produces `'helloworld'` on one line. Always include `\n` explicitly.
+- **`.write()` returns the character count as an int.** It's easy to overlook, but useful if you need to verify how much was written. Ignoring the return value is fine.
+- **`'\n'.join(lines) + '\n'` is the clean pattern for writing a list of strings.** One `.write()` call beats a loop of individual writes, and the trailing `\n` keeps the file properly terminated.
+- **`shelve` gives you a persistent dict backed by binary files on disk.** You interact with it exactly like a regular dict — `shelf['key'] = value`, `shelf['key']`, `del shelf['key']`, `'key' in shelf` all work. The data survives between program runs.
+- **`shelve.open()` manages its own file extensions — do not add one to the path.** Pass `'mydata'`, not `'mydata.db'`. On macOS it creates `mydata.db`; on other systems it may create multiple files. The name is OS-dependent.
+- **Mutating a mutable value stored in a shelf requires a read-modify-write cycle.** `shelf['score'] += 1` may silently fail on some Python versions. The safe pattern is: read the value out, modify it, assign it back: `val = shelf['key']; val.append(x); shelf['key'] = val`.
+- **`pprint.pformat()` converts a Python object into a string of valid Python code.** Writing `'variable = ' + pformat(data) + '\n'` to a `.py` file creates a human-readable, hand-editable data file. This is the pattern that makes `saved_data.py` and `config.py` work.
+- **Load a `pformat()`-generated file back by importing it as a module.** `import saved_data` runs the file, which executes the assignment statements. The variable is then available as `saved_data.cats`. This is a simple persistence technique that requires zero parsing.
+- **`pformat()` only works for Python literal types.** Strings, ints, floats, lists, dicts, tuples, booleans, and `None` all serialize cleanly. Custom class instances, file objects, and functions cannot be represented this way — use `shelve` (which uses `pickle` internally) for those.
+- **`shelve` vs `pformat()` is a tradeoff between flexibility and readability.** `shelve` handles almost any Python object but is binary and Python-only. `pformat()` files are readable in any text editor and editable by hand, but are limited to literal data types.
+- **`os.path` is the legacy path API — know it to read old code, but write new code with `pathlib`.** Key translations: `os.path.join()` → `Path('/') / 'dir'`, `os.path.basename()` → `.name`, `os.path.dirname()` → `.parent`, `os.path.splitext()` → `.stem` + `.suffix`, `os.path.getsize()` → `.stat().st_size`, `os.listdir()` → `.iterdir()`.
+- **`os.listdir()` returns plain strings; `Path.iterdir()` returns Path objects.** With `iterdir()` you can immediately call `.is_file()`, `.name`, `.suffix`, etc. on each item without constructing a new `Path` from a string.
+- **`frequency.get(word, 0) + 1` is the canonical word-counting idiom.** It combines the Ch. 5 `get()` pattern (safe default on a missing key) with an inline increment. No `if word in frequency:` guard needed.

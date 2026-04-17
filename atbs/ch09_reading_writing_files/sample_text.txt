@@ -1,0 +1,8 @@
+Python is a great programming language. Python is easy to learn and easy to use.
+Many programmers love Python because Python code is clear and readable.
+Learning Python takes time but the time is well spent.
+Every programmer should learn at least one programming language well.
+Python is often the first language that new programmers choose to learn.
+Clear code is better than clever code. Simple code is better than complex code.
+The best code is code that other programmers can read and understand easily.
+Python makes it easy to write clear and simple code that is easy to maintain.

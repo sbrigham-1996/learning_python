@@ -1,0 +1,3 @@
+Entry 1: program started
+Entry 2: something happened
+Entry 3: program finished
