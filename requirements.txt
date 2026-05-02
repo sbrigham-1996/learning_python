@@ -2,4 +2,5 @@ pillow==12.1.1
 PyInputPlus==0.2.12
 pyperclip==1.11.0
 PySimpleValidate==0.2.12
+send2trash==2.1.0
 stdiomask==0.0.6

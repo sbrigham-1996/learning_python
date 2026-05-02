@@ -47,6 +47,7 @@ Third-party libraries installed in this project, tracked in `requirements.txt` a
 |---------|------------|---------|
 | `pyperclip` | Ch. 6 | Clipboard access — used in the password locker capstone |
 | `PyInputPlus` | Ch. 8 | Input validation with built-in retry, timeout, and type checking |
+| `send2trash` | Ch. 10 | Safe deletes — sends files/folders to the OS Trash instead of permanently deleting |
 
 ---
 
@@ -83,8 +84,8 @@ learning_python/
 | Ch. 7 | Pattern Matching with Regex | ✅ Complete |
 | Ch. 8 | Input Validation | ✅ Complete |
 | Ch. 9 | Reading & Writing Files | ✅ Complete |
-| Ch. 10 | Organizing Files | 🔜 Next |
-| Ch. 11 | Debugging | ⬜ Not started |
+| Ch. 10 | Organizing Files | ✅ Complete |
+| Ch. 11 | Debugging | 🔜 Next |
 | Ch. 12 | Web Scraping | ⬜ Not started |
 | Ch. 13 | Working with Excel Spreadsheets | ⬜ Not started |
 | Ch. 14 | Working with Google Sheets | ⬜ Not started |
@@ -237,3 +238,29 @@ learning_python/
 - **`os.path` is the legacy path API — know it to read old code, but write new code with `pathlib`.** Key translations: `os.path.join()` → `Path('/') / 'dir'`, `os.path.basename()` → `.name`, `os.path.dirname()` → `.parent`, `os.path.splitext()` → `.stem` + `.suffix`, `os.path.getsize()` → `.stat().st_size`, `os.listdir()` → `.iterdir()`.
 - **`os.listdir()` returns plain strings; `Path.iterdir()` returns Path objects.** With `iterdir()` you can immediately call `.is_file()`, `.name`, `.suffix`, etc. on each item without constructing a new `Path` from a string.
 - **`frequency.get(word, 0) + 1` is the canonical word-counting idiom.** It combines the Ch. 5 `get()` pattern (safe default on a missing key) with an inline increment. No `if word in frequency:` guard needed.
+
+### Ch. 10 — Organizing Files
+
+- **`shutil.copy()` is for one file; `shutil.copytree()` is for a whole folder tree.** `copytree()` requires `dst` to NOT already exist — it creates the destination fresh. Guard re-runs by removing the old copy first (`if dst.exists(): shutil.rmtree(dst)`).
+- **`shutil.move()` covers move, rename, and rename-in-place all in one call.** No separate `os.rename()` needed. **Sharp edge:** if `dst` is an existing file, it is silently overwritten — same hazard as `'w'` mode in Ch. 9.
+- **The three permanent-delete functions each have a specific scope.** `os.unlink()` → one file. `os.rmdir()` → one *empty* directory. `shutil.rmtree()` → directory + everything inside. None of them go to the Trash.
+- **`os.rmdir()` refusing to delete a non-empty directory is a feature, not a limitation.** It is the safe, defensive choice when you *expect* a directory to be empty — it raises `OSError` if your assumption was wrong, instead of silently destroying contents the way `rmtree()` would.
+- **`OSError` is the parent class** of `FileNotFoundError`, `PermissionError`, `IsADirectoryError`, etc. Catching `OSError` covers cross-platform errno variations (e.g., "directory not empty" has different numbers on macOS/Linux/Windows). Catch the specific subclass when *that's* the only error you expect.
+- **`Path.unlink()` is the modern `pathlib` equivalent of `os.unlink()`.** Same operation, called as a method on the Path object. After Ch. 9, prefer this form for consistency with the rest of your `pathlib` code.
+- **The dry-run safety pattern: print first, delete second — never the reverse.** When writing a deletion script, always run it once with `print(path)` and the `unlink()` call commented out. Eyeball the list. Only then uncomment the delete. This catches off-by-one filter bugs before they become permanent data loss.
+- **`send2trash` is the safe alternative for "I'm not 100% sure my filter is correct" cleanup.** It moves files/folders to the OS Trash (recoverable) instead of permanent deletion. Same call signature for files and directories: `send2trash(path)`. Tradeoff: doesn't free disk space until the Trash is emptied.
+- **Don't reflexively use `send2trash` for everything.** Scaffolding folders the script created itself are noise — they belong in permanent delete-land via `shutil.rmtree()`. Reserve `send2trash` for content with value.
+- **`os.walk()` yields a 3-tuple per directory: `(folder_name, subfolders, filenames)`.** `subfolders` and `filenames` are bare names — NOT paths. To act on them, rebuild: `Path(folder_name) / name`. Forgetting this is a classic early bug — the script "works" but operates relative to the wrong CWD.
+- **Mutating the `subfolders` list IN PLACE prunes the walk; reassigning does NOT.** `subfolders.remove('node_modules')` works. `subfolders = [s for s in subfolders if ...]` does nothing — that creates a new local variable, but `os.walk()` still has the original list. Same trick for stable traversal order: `subfolders.sort()` in place.
+- **`os.walk()` does NOT guarantee alphabetical order.** Order comes from the OS/filesystem. If you need reproducible output, sort `subfolders` and `filenames` yourself.
+- **Use `os.walk()` when you need tree structure or pruning; use `Path.rglob()` when you just want a flat list of matches.** `rglob('*.txt')` is shorter for "find every X anywhere underneath." `os.walk()` is the right tool when per-directory grouping or skip logic matters.
+- **`zipfile.ZipFile` is a context manager — always use `with`.** Same rule as `open()` from Ch. 9. Default mode is `'r'` (read-only).
+- **`ZipFile` has four modes: `r`, `w`, `a`, `x`.** `'w'` silently overwrites an existing archive. **`'x'` is the safe alternative** — it raises `FileExistsError` if the target exists, which is what you want for backup scripts that must not clobber yesterday's data.
+- **`arcname` is the single most important parameter when writing ZIPs.** Without it, the file's absolute filesystem path is baked into the archive — extracting gives the recipient a deeply nested folder mirror of *your* machine. With `arcname=path.relative_to(some_root)`, the archive is clean and portable.
+- **`relative_to(folder)` vs `relative_to(folder.parent)` controls whether the folder itself is in the archive.** For a "backup of folder X" archive, use `folder.parent` so entries are `X/file.txt` — extracting reconstructs the folder. Use `folder` for loose files at the root.
+- **`ZIP_DEFLATED` is the default-default; `ZIP_STORED` is bundle-only.** `STORED` *increases* file size by a few bytes of header overhead — use it only for files that won't compress (already-zipped images, video). For text and code, always `DEFLATED`.
+- **`.read(name)` returns `bytes`, not `str` — even for text files.** Decode with `.decode()` if you know the encoding. This lets you peek inside an archive without writing anything to disk.
+- **`.extract()` and `.extractall()` default to the current working directory — always pass `path=`.** Defaulting to CWD is the kind of surprise that makes scripts hard to debug. Be explicit about the destination.
+- **Appending a duplicate name to a ZIP does NOT replace the existing entry — both copies are stored.** Most extraction tools return the last one, but the duplicate sits there wasting space. To "replace" entries, recreate the archive from scratch.
+- **The "loop until unused" pattern is the clean way to pick a non-clobbering output filename.** `while (output_dir / f'{name}_{n}.zip').exists(): n += 1`. Simpler and clearer than regexing existing filenames for the max number — same result.
+- **`Path.resolve()` at function entry normalizes paths before using `.parent` or `.name`.** Without it, `backup_to_zip('.')` gives surprising results: `Path('.').name` is `''`, `Path('.').parent` is `Path('.')`. Resolving turns relative paths, `.`, and symlinks into a clean absolute path the rest of the function can rely on.
